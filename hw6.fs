@@ -27,27 +27,32 @@ let exprToString expr =
         | Mul (e1, e2) -> lParen + recExprStr true e1 + "*" + recExprStr true e2 + rParen
     recExprStr false expr
 
-// TODO: write simplify function
 let rec simplify expr = 
     match expr with
     | Add (Const a, Const b) -> Const (a + b)
     | Sub (Const a, Const b) -> Const (a - b)
     | Mul (Const a, Const b) -> Const (a * b)
     | Neg (Const a) -> Const (-a)
-    | Add (ex, Const 0.0) -> ex
-    | Add (Const 0.0, ex) -> ex
-    | Sub (ex, Const 0.0) -> ex
-    | Sub (Const 0.0, ex) -> Neg ex
+    | Add (ex, Const 0.0) -> simplify ex
+    | Add (Const 0.0, ex) -> simplify ex
+    | Sub (ex, Const 0.0) -> simplify ex
+    | Sub (Const 0.0, ex) -> simplify (Neg ex)
     | Mul (_, Const 0.0) -> Const 0.0
     | Mul (Const 0.0, _) -> Const 0.0
-    | Mul (ex, Const 1.0) -> ex
-    | Mul (Const 1.0, ex) -> ex
-    | Neg (Neg (ex)) -> ex
-    | Add (X, Y) -> expr
-    | Add (Y, X) -> expr
-    | Mul (ex1, ex2) -> simplify (Mul (simplify ex1, simplify ex2))
-    | Add (ex1, ex2) -> simplify (Add (simplify ex1, simplify ex2))
-    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else simplify (Sub (simplify ex1, simplify ex2))
+    | Mul (ex, Const 1.0) -> simplify ex
+    | Mul (Const 1.0, ex) -> simplify ex
+    | Neg (Neg (ex)) -> simplify ex
+    | Neg ex -> Neg (simplify ex)
+    | Mul (ex1, ex2) ->
+        let simpExpr = Mul (simplify ex1, simplify ex2)
+        if simpExpr = expr then simpExpr else simplify simpExpr
+    | Add (ex1, ex2) -> 
+        let simpExpr = Add (simplify ex1, simplify ex2)
+        if simpExpr = expr then simpExpr else simplify simpExpr
+    | Sub (ex1, ex2) -> 
+        if ex1 = ex2 then Const 0.0 else 
+        let simpExpr = Sub (simplify ex1, simplify ex2)
+        if simpExpr = expr then simpExpr else simplify simpExpr
     | _ -> expr
 
 // Provided Tests (DO NOT MODIFY)
@@ -98,5 +103,9 @@ printfn "    Actual:  %s" (exprToString (simplify t20))
 //REMOVE!!!
 //Created Tests
 let test1 = Sub (X, Add (X, X))
+let test2 = Mul (Add (X, Add (Mul (X, Const 0.0), Const 1.0)), Neg (Sub (Mul (Const 2.0, Add (Y, Add (Y, Const 0.0))), Sub (Const 0.0, X))))
 
+printfn "---Other Tests---"
 printfn "test1  Correct: x-(x+x)\t\tActual: %s" (exprToString (simplify test1))
+printfn "test2  Original: %A" (exprToString test2)
+printfn "test2  Correct: (x+1)*(-((2*(y+y))+x))\t\tActual: %s" (exprToString (simplify test2))
