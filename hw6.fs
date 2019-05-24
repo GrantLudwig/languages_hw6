@@ -1,3 +1,7 @@
+//hw6.fs v1.0
+//Grant Ludwig
+//5/28/19
+
 // Expression type (DO NOT MODIFY)
 type Expression =
     | X
@@ -34,14 +38,14 @@ let rec simplify expr =
     | Add (Const 0.0, ex) -> ex
     | Sub (ex, Const 0.0) -> ex
     | Sub (Const 0.0, ex) -> Neg ex
-    | Mul (ex, Const 0.0) -> Const 0.0
-    | Mul (Const 0.0, ex) -> Const 0.0
+    | Mul (_, Const 0.0) -> Const 0.0
+    | Mul (Const 0.0, _) -> Const 0.0
     | Mul (ex, Const 1.0) -> ex
     | Mul (Const 1.0, ex) -> ex
     | Neg (Neg (ex)) -> ex
-    | Mul (ex1, ex2) -> simplify (Mul (simplify ex1, simplify ex2))
-    | Add (ex1, ex2) -> simplify (Add (simplify ex1, simplify ex2))
-    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else simplify (Sub (simplify ex1, simplify ex2))
+    | Mul (ex1, ex2) -> Mul (simplify ex1, simplify ex2)
+    | Add (ex1, ex2) -> Add (simplify ex1, simplify ex2)
+    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else Sub (simplify ex1, simplify ex2)
     | _ -> expr
 
 // Provided Tests (DO NOT MODIFY)
@@ -88,3 +92,9 @@ printfn "t18 Correct: -(y+x)\tActual: %s" (exprToString (simplify t18))
 printfn "t19 Correct: x\t\tActual: %s" (exprToString (simplify t19))
 printfn "t20 Correct: (x+1)*(-((2*y)-x))"
 printfn "    Actual:  %s" (exprToString (simplify t20))
+
+//REMOVE!!!
+//Created Tests
+let test1 = Sub (X, Add (X, X))
+
+printfn "test1  Correct: x-(x+x)\t\tActual: %s" (exprToString (simplify test1))
