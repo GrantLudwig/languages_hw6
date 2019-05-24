@@ -24,7 +24,23 @@ let exprToString expr =
     recExprStr false expr
 
 // TODO: write simplify function
-let rec simplify expr = expr
+let rec simplify expr = 
+    match expr with
+    | Add (Const a, Const b) -> Const (a + b)
+    | Sub (Const a, Const b) -> Const (a - b)
+    | Mul (Const a, Const b) -> Const (a * b)
+    | Neg (Const a) -> Const (-a)
+    | Add (ex, Const 0.0) -> ex
+    | Add (Const 0.0, ex) -> ex
+    | Sub (ex, Const 0.0) -> ex
+    | Sub (Const 0.0, ex) -> Neg ex
+    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else Sub (ex1, ex2)
+    | Mul (ex, Const 0.0) -> Const 0.0
+    | Mul (Const 0.0, ex) -> Const 0.0
+    | Mul (ex, Const 1.0) -> ex
+    | Mul (Const 1.0, ex) -> ex
+    | Neg (Neg (ex)) -> ex
+    | _ -> expr
 
 // Provided Tests (DO NOT MODIFY)
 printfn "---Provided Tests---"
