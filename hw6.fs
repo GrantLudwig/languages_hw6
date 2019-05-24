@@ -43,9 +43,11 @@ let rec simplify expr =
     | Mul (ex, Const 1.0) -> ex
     | Mul (Const 1.0, ex) -> ex
     | Neg (Neg (ex)) -> ex
-    | Mul (ex1, ex2) -> Mul (simplify ex1, simplify ex2)
-    | Add (ex1, ex2) -> Add (simplify ex1, simplify ex2)
-    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else Sub (simplify ex1, simplify ex2)
+    | Add (X, Y) -> expr
+    | Add (Y, X) -> expr
+    | Mul (ex1, ex2) -> simplify (Mul (simplify ex1, simplify ex2))
+    | Add (ex1, ex2) -> simplify (Add (simplify ex1, simplify ex2))
+    | Sub (ex1, ex2) -> if ex1 = ex2 then Const 0.0 else simplify (Sub (simplify ex1, simplify ex2))
     | _ -> expr
 
 // Provided Tests (DO NOT MODIFY)
