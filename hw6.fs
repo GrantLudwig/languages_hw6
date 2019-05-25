@@ -29,26 +29,26 @@ let exprToString expr =
 
 let rec simplify expr = 
     match expr with
-    | Add (Const a, Const b) -> Const (a + b)
-    | Sub (Const a, Const b) -> Const (a - b)
-    | Mul (Const a, Const b) -> Const (a * b)
     | Neg (Const a) -> Const (-a)
-    | Add (ex, Const 0.0) -> simplify ex
-    | Add (Const 0.0, ex) -> simplify ex
-    | Sub (ex, Const 0.0) -> simplify ex
-    | Sub (Const 0.0, ex) -> simplify (Neg ex)
+    | Neg (Neg (ex)) -> simplify ex
+    | Neg ex -> Neg (simplify ex)
+    | Mul (Const a, Const b) -> Const (a * b)
     | Mul (_, Const 0.0) -> Const 0.0
     | Mul (Const 0.0, _) -> Const 0.0
     | Mul (ex, Const 1.0) -> simplify ex
     | Mul (Const 1.0, ex) -> simplify ex
-    | Neg (Neg (ex)) -> simplify ex
-    | Neg ex -> Neg (simplify ex)
     | Mul (ex1, ex2) ->
         let simpExpr = Mul (simplify ex1, simplify ex2)
         if simpExpr = expr then simpExpr else simplify simpExpr
+    | Add (Const a, Const b) -> Const (a + b)
+    | Add (ex, Const 0.0) -> simplify ex
+    | Add (Const 0.0, ex) -> simplify ex
     | Add (ex1, ex2) -> 
         let simpExpr = Add (simplify ex1, simplify ex2)
         if simpExpr = expr then simpExpr else simplify simpExpr
+    | Sub (Const a, Const b) -> Const (a - b)
+    | Sub (ex, Const 0.0) -> simplify ex
+    | Sub (Const 0.0, ex) -> simplify (Neg ex)
     | Sub (ex1, ex2) -> 
         if ex1 = ex2 then Const 0.0 else 
         let simpExpr = Sub (simplify ex1, simplify ex2)
