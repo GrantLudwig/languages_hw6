@@ -108,4 +108,4 @@ let test2 = Mul (Add (X, Add (Mul (X, Const 0.0), Const 1.0)), Neg (Sub (Mul (Co
 printfn "---Other Tests---"
 printfn "test1  Correct: x-(x+x)\t\tActual: %s" (exprToString (simplify test1))
 printfn "test2  Original: %A" (exprToString test2)
-printfn "test2  Correct: (x+1)*(-((2*(y+y))+x))\t\tActual: %s" (exprToString (simplify test2))
+printfn "test2  Correct: (x+1)*(-((2*(y+y))-(-x)))\t\tActual: %s" (exprToString (simplify test2))
