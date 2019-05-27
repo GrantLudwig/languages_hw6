@@ -99,13 +99,3 @@ printfn "t18 Correct: -(y+x)\tActual: %s" (exprToString (simplify t18))
 printfn "t19 Correct: x\t\tActual: %s" (exprToString (simplify t19))
 printfn "t20 Correct: (x+1)*(-((2*y)-x))"
 printfn "    Actual:  %s" (exprToString (simplify t20))
-
-//REMOVE!!!
-//Created Tests
-let test1 = Sub (X, Add (X, X))
-let test2 = Mul (Add (X, Add (Mul (X, Const 0.0), Const 1.0)), Neg (Sub (Mul (Const 2.0, Add (Y, Add (Y, Const 0.0))), Sub (Const 0.0, X))))
-
-printfn "---Other Tests---"
-printfn "test1  Correct: x-(x+x)\t\tActual: %s" (exprToString (simplify test1))
-printfn "test2  Original: %A" (exprToString test2)
-printfn "test2  Correct: (x+1)*(-((2*(y+y))-(-x)))\t\tActual: %s" (exprToString (simplify test2))
